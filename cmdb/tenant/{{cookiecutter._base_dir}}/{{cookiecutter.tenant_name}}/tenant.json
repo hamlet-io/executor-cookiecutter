@@ -1,0 +1,20 @@
+{
+    "Tenant" : {
+        "Id" : "{{cookiecutter.tenant_id}}",
+        "Name" : "{{cookiecutter.tenant_name}}",
+        "CertificateBehaviours" : {
+            "External" : true
+        }
+    },
+    "Account" : {
+        "Region" : "{{cookiecutter.default_region}}",
+        "Domain" : "{{cookiecutter.tenant_id}}",
+        "Audit" : {
+            "Offline" : 90,
+            "Expiration" : 2555
+        }
+    },
+    "Product" : {
+        "Region" : "{{cookiecutter.default_region}}"
+    }
+}

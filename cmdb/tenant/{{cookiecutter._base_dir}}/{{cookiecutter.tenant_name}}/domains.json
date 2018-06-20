@@ -1,0 +1,10 @@
+{
+    "Domains" : {
+        "Validation" : "{{cookiecutter.domain_stem}}",
+        "{{cookiecutter.tenant_id}}" : {
+            "Stem": "{{cookiecutter.domain_stem}}"
+        }
+    },
+    "Certificates" : {
+    }
+}

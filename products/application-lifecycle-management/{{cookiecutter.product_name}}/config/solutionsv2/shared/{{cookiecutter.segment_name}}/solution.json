@@ -1,0 +1,195 @@
+{
+    "Solution" : {
+        "Id" : "{{cookiecutter.solution_id}}",
+        "Name" : "{{cookiecutter.solution_name}}"
+    },
+    "Tiers" : {
+        "elb" : {
+            "Components" : {
+                "alm" : {
+                    "DeploymentUnits" : ["alm-elb"],
+                    "LB" : {
+                        "Engine" : "classic",
+                        "Logs" : true,
+                        "PortMappings" : {
+                            "httpsjenkins" : {}, 
+                            "http" : {}, 
+                            "jenkinsjnlp" : {}
+                        },
+                        "HealthCheckPort" : "jenkins",
+                        "IPAddressGroups" : ["automation_users"],
+                        "Certificate" : {
+                            "IncludeInHost" : {
+                                "Product" : true,
+                                "Environment" : false,
+                                "Segment" : false,
+                                "Tier" : false,
+                                "Component" : false,
+                                "Instance" : false,
+                                "Version" : false,
+                                "Host" : false
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "app" : {
+            "Components" : {
+                "alm-ecs" : {
+                    "Title" : "Application life cycle management tasks",
+                    "DeploymentUnits" : ["alm-ecs"],
+                    "Role" : "ECS",
+                    "ECS" : {
+                        "Services" : {
+                            "jenkins" : {
+                                "DeploymentUnits" : ["jenkins"],
+                                "Containers" : {
+                                    "jenkins" : {
+                                        "Cpu" : 1024,
+                                        "Memory" : 2048,
+                                        "Ports" : {
+                                            "jenkins" : {
+                                                "LB" : {
+                                                    "Tier": "elb",
+                                                    "Component"  : "alm",
+                                                    "Version" : "",
+                                                    "Port" : "https",
+                                                    "LinkName" : "JENKINSLB"
+                                                },
+                                                "DynamicHostPort" : false
+                                            },
+                                            "jenkinsjnlp" : {
+                                                "LB" : {
+                                                    "Tier": "elb",
+                                                    "Component"  : "alm",
+                                                    "Version" : "",
+                                                    "Port" : "jenkinsjnlp"
+                                                },
+                                                "DynamicHostPort" : false
+                                            }
+                                        },
+                                        "Links" : {
+                                            "slave-codeontap" : {
+                                                "Tier" : "app",
+                                                "Component" : "alm-ecs",
+                                                "Task" : "codeontap",
+                                                "Role" : "deploy"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "redirector" : {
+                                "DeploymentUnits" : ["redirector"],
+                                "Containers" : {
+                                    "redirector" : {
+                                        "Cpu" : 24,
+                                        "Memory" : 64,
+                                        "Ports" : {
+                                            "http" : {
+                                                "LB" : {
+                                                    "Tier": "elb",
+                                                    "Component"  : "alm",
+                                                    "Version" : "",
+                                                    "Port" : "http"
+                                                },
+                                                "DynamicHostPort" : false
+                                            }
+                                        }
+                                    }
+                                }   
+                            }      
+                        },
+                        "Tasks" : {
+                            "codeontap" : {
+                                "DeploymentUnits" : ["codeontap"],
+                                "Containers" : {
+                                    "codeontap" : {
+                                        "Cpu" : 512,
+                                        "Memory" : 512
+                                    }
+                                },
+                                "DelegateDeployment" : true
+                            }
+                        },
+                        "Links" : {
+                            "jenkins_home" : {
+                                "Tier" : "app",
+                                "Component" : "alm-efs",
+                                "Mount" : "jenkins"
+                            },
+                            "codeontap" : {
+                                "Tier" : "app",
+                                "Component" : "alm-efs",
+                                "Mount" : "codeontap"
+                            }
+                        }
+                    }
+                },
+                "alm-efs" : {
+                    "DeploymentUnits" : ["alm-efs"],
+                    "EFS" : {
+                        "Mounts" : {
+                            "jenkins" : {
+                                "Directory" : "/jenkins_home/"
+                            },
+                            "codeontap" : {
+                                "Directory" : "/codeontap/"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "Segment": {
+        "SSH": {
+            "Enabled" : true,
+            "Active" : true,
+            "IPAddressGroups" : ["automation_users"]
+        }
+    },
+    "Processors" : {
+        "default" : {
+            "ECS" : {
+                "Processor" : "t2.medium"
+            }
+        }
+    },
+    "Ports" :  {
+        "jenkins" : {
+            "Port": 8080,
+            "Protocol": "HTTP",
+            "IPProtocol": "tcp",
+            "HealthCheck" : {
+                "Path" : "/robots.txt",
+                "Interval" : "30",
+                "Timeout" : "29",
+                "HealthyThreshold" : "2",
+                "UnhealthyThreshold" : "10"
+            }
+        },
+        "jenkinsjnlp" : {
+            "Port" : 50000,
+            "Protocol" : "TCP",
+            "IPProtocol" : "tcp",
+            "HealthCheck" : {
+                "Interval" : "30",
+                "Timeout" : "29",
+                "HealthyThreshold" : "2",
+                "UnhealthyThreshold" : "10"
+            }
+        }
+    },
+    "PortMappings": { 
+        "httpsjenkins": {
+            "Source": "https",
+            "Destination": "jenkins"
+        },
+        "jenkinsjnlp" : {
+            "Source" : "jenkinsjnlp",
+            "Destination" : "jenkinsjnlp"
+        }
+    }
+}
