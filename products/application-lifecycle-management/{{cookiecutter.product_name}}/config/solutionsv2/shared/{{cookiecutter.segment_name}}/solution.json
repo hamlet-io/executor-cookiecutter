@@ -8,13 +8,15 @@
             "Components" : {
                 "alm" : {
                     "DeploymentUnits" : ["alm-elb"],
+                    "MultiAZ" : {{cookiecutter.multi_az}},
                     "LB" : {
                         "Engine" : "classic",
+                        "IdleTimeout" : 1200,
                         "Logs" : true,
                         "PortMappings" : {
-                            "httpsjenkins" : {}, 
-                            "http" : {}, 
-                            "jenkinsjnlp" : {}
+                            "jenkinshttps" : {}, 
+                            "jenkinsjnlp" : {}, 
+                            "httpredirect" : {}
                         },
                         "HealthCheckPort" : "jenkins",
                         "IPAddressGroups" : ["automation_users"],
@@ -40,31 +42,30 @@
                     "Title" : "Application life cycle management tasks",
                     "DeploymentUnits" : ["alm-ecs"],
                     "Role" : "ECS",
+                    "MultiAZ" : {{cookiecutter.multi_az}},
                     "ECS" : {
                         "Services" : {
                             "jenkins" : {
                                 "DeploymentUnits" : ["jenkins"],
                                 "Containers" : {
                                     "jenkins" : {
-                                        "Cpu" : 1024,
+                                        "Cpu" : 512,
                                         "Memory" : 2048,
                                         "Ports" : {
-                                            "jenkins" : {
-                                                "LB" : {
-                                                    "Tier": "elb",
-                                                    "Component"  : "alm",
-                                                    "Version" : "",
-                                                    "Port" : "https",
-                                                    "LinkName" : "JENKINSLB"
-                                                },
-                                                "DynamicHostPort" : false
-                                            },
                                             "jenkinsjnlp" : {
                                                 "LB" : {
                                                     "Tier": "elb",
                                                     "Component"  : "alm",
-                                                    "Version" : "",
-                                                    "Port" : "jenkinsjnlp"
+                                                    "PortMapping" : "jenkinsjnlp"
+                                                },
+                                                "DynamicHostPort" : false
+                                            },
+                                            "jenkins" : {
+                                                "LB" : {
+                                                    "Tier": "elb",
+                                                    "Component"  : "alm",
+                                                    "PortMapping" : "jenkinshttps",
+                                                    "LinkName" : "JENKINSLB"
                                                 },
                                                 "DynamicHostPort" : false
                                             }
@@ -91,8 +92,7 @@
                                                 "LB" : {
                                                     "Tier": "elb",
                                                     "Component"  : "alm",
-                                                    "Version" : "",
-                                                    "Port" : "http"
+                                                    "PortMapping" : "httpredirect"
                                                 },
                                                 "DynamicHostPort" : false
                                             }
@@ -104,13 +104,17 @@
                         "Tasks" : {
                             "codeontap" : {
                                 "DeploymentUnits" : ["codeontap"],
+                                "FixedName" : true,
                                 "Containers" : {
                                     "codeontap" : {
+                                        "Version" : "latest",
                                         "Cpu" : 512,
-                                        "Memory" : 512
+                                        "Memory" : 512,
+                                        "MaximumMemory" : -1,
+                                        "RunCapabilities" : ["NET_ADMIN"],
+                                        "Privileged" : true
                                     }
-                                },
-                                "DelegateDeployment" : true
+                                }
                             }
                         },
                         "Links" : {
@@ -123,6 +127,11 @@
                                 "Tier" : "app",
                                 "Component" : "alm-efs",
                                 "Mount" : "codeontap"
+                            },
+                            "awsprofile" : {
+                                "Tier" : "app",
+                                "Component" : "alm-efs",
+                                "Mount" : "awsprofile"
                             }
                         }
                     }
@@ -136,6 +145,9 @@
                             },
                             "codeontap" : {
                                 "Directory" : "/codeontap/"
+                            },
+                            "awsprofile" : {
+                                "Directory" : "/awsprofile/"
                             }
                         }
                     }
@@ -150,14 +162,38 @@
             "IPAddressGroups" : ["automation_users"]
         }
     },
+    "IPAddressGroups" : {
+        "automation_users" : {
+            "automation_users" : {
+                "Description" : "Automation User IP Address List",
+                "CIDR": "{{cookiecutter.source_ip_network}}"
+            }
+        }
+    },
     "Processors" : {
         "default" : {
-            "ECS" : {
-                "Processor" : "t2.medium"
+            "ECS": {
+                "Processor": "{{cookiecutter.ecs_instance_type}}",
+                "MinPerZone": 1,
+                "MaxPerZone": 1,
+                "DesiredPerZone": 1
             }
         }
     },
     "Ports" :  {
+        "httpredirect" : {
+            "Port" : 80,
+            "Protocol" : "HTTP",
+            "IPProtocol" : "tcp",
+            "HealthCheck" : {
+                "Path" : "/",
+                "HealthyThreshold" : "2",
+                "UnhealthyThreshold" : "3",
+                "Interval" : "30",
+                "Timeout" : "5",
+                "SuccessCodes" : "301"
+            }
+        },
         "jenkins" : {
             "Port": 8080,
             "Protocol": "HTTP",
@@ -182,14 +218,18 @@
             }
         }
     },
-    "PortMappings": { 
-        "httpsjenkins": {
+    "PortMappings" : { 
+        "jenkinshttps": {
             "Source": "https",
             "Destination": "jenkins"
         },
         "jenkinsjnlp" : {
             "Source" : "jenkinsjnlp",
             "Destination" : "jenkinsjnlp"
+        },
+        "httpredirect" : {
+            "Source" : "http",
+            "Destination" : "httpredirect"
         }
     }
 }

@@ -3,13 +3,5 @@
         "Id" : "{{cookiecutter.product_id}}",
         "Name" : "{{cookiecutter.product_name}}",
         "Domain" : "{{cookiecutter.domain_id}}"
-    },
-    "IPAddressGroups" : {
-        "automation_users" : {
-            "automation_users" : {
-                "Description" : "Automation User IP Address List",
-                "CIDR": "{{cookiecutter.source_ip_network}}"
-            }
-        }
     }
 }
