@@ -7,8 +7,7 @@
         "elb" : {
             "Components" : {
                 "alm" : {
-                    "DeploymentUnits" : ["alm-lb"],
-                    "MultiAZ" : {{cookiecutter.multi_az}},
+                    "DeploymentUnits" : ["alm-lb"],      
                     "LB" : {
                         "Engine" : "classic",
                         "IdleTimeout" : 1200,
@@ -42,7 +41,6 @@
                     "Title" : "Application life cycle management tasks",
                     "DeploymentUnits" : ["alm-ecs"],
                     "Role" : "ECS",
-                    "MultiAZ" : {{cookiecutter.multi_az}},
                     "ECS" : {
                         "DockerUsers" : {
                             "jenkins" : {
@@ -55,7 +53,7 @@
                                 "DeploymentUnits" : ["jenkins"],
                                 "DesiredCount" : 1,
                                 "Containers" : {
-                                    "jenkins" : {
+                                    "_jenkins" : {
                                         "Cpu" : 512,
                                         "Memory" : 2048,
                                         "Ports" : {
@@ -86,7 +84,7 @@
                                             }
                                         }
                                     },
-                                    "redirector" : {
+                                    "_redirector" : {
                                         "Cpu" : 24,
                                         "Memory" : 64,
                                         "Ports" : {
@@ -108,7 +106,7 @@
                                 "DeploymentUnits" : ["codeontap"],
                                 "FixedName" : true,
                                 "Containers" : {
-                                    "codeontap" : {
+                                    "_codeontap" : {
                                         "Version" : "latest",
                                         "Cpu" : 512,
                                         "Memory" : 512,

@@ -1,6 +1,7 @@
 {
   "Environment" : {
     "Id" : "{{cookiecutter.environment_id}}",
-    "Name" : "{{cookiecutter.environment_name}}"
+    "Name" : "{{cookiecutter.environment_name}}",
+    "MultiAZ" : {{cookiecutter.multi_az}}
   }
 }
