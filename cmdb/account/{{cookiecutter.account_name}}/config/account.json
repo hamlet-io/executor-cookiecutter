@@ -3,5 +3,9 @@
         "Id" : "{{cookiecutter.account_id}}",
         "Name" : "{{cookiecutter.account_name}}",
         "Seed" : "{{cookiecutter.account_seed}}"
+        {% if cookiecutter.account_type == "aws"  %}
+        ,
+        "AWSId" : "{{cookiecutter.aws_account_id}}"
+        {% endif %}
     }
 }

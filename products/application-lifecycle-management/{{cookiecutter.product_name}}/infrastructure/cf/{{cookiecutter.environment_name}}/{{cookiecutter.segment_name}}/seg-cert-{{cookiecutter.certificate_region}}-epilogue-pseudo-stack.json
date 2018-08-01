@@ -4,7 +4,7 @@
             "Comment": "Certificate",
             "Outputs": [
                 {
-                    "OutputKey": "certificateXs{{cookiecutter.certificate_cn|replace('*','star')|replace('.','X')|replace('-','X')}}",
+                    "OutputKey": "certificateX{{cookiecutter.certificate_cn|replace('*','star')|replace('.','X')|replace('-','X')}}",
                     "OutputValue": "{{cookiecutter.certificate_arn}}"
                 },
                 {

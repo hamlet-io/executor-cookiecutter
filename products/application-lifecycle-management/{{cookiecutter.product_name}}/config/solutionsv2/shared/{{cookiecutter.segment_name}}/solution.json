@@ -7,7 +7,7 @@
         "elb" : {
             "Components" : {
                 "alm" : {
-                    "DeploymentUnits" : ["alm-elb"],
+                    "DeploymentUnits" : ["alm-lb"],
                     "MultiAZ" : {{cookiecutter.multi_az}},
                     "LB" : {
                         "Engine" : "classic",
@@ -44,9 +44,16 @@
                     "Role" : "ECS",
                     "MultiAZ" : {{cookiecutter.multi_az}},
                     "ECS" : {
+                        "DockerUsers" : {
+                            "jenkins" : {
+                                "UserName" : "jenkins",
+                                "UID" : 1000
+                            }
+                        },
                         "Services" : {
                             "jenkins" : {
                                 "DeploymentUnits" : ["jenkins"],
+                                "DesiredCount" : 1,
                                 "Containers" : {
                                     "jenkins" : {
                                         "Cpu" : 512,
@@ -75,15 +82,10 @@
                                                 "Tier" : "app",
                                                 "Component" : "alm-ecs",
                                                 "Task" : "codeontap",
-                                                "Role" : "deploy"
+                                                "Role" : "run"
                                             }
                                         }
-                                    }
-                                }
-                            },
-                            "redirector" : {
-                                "DeploymentUnits" : ["redirector"],
-                                "Containers" : {
+                                    },
                                     "redirector" : {
                                         "Cpu" : 24,
                                         "Memory" : 64,
@@ -98,8 +100,8 @@
                                             }
                                         }
                                     }
-                                }   
-                            }      
+                                }
+                            }   
                         },
                         "Tasks" : {
                             "codeontap" : {
@@ -110,9 +112,7 @@
                                         "Version" : "latest",
                                         "Cpu" : 512,
                                         "Memory" : 512,
-                                        "MaximumMemory" : -1,
-                                        "RunCapabilities" : ["NET_ADMIN"],
-                                        "Privileged" : true
+                                        "MaximumMemory" : -1
                                     }
                                 }
                             }
@@ -127,11 +127,6 @@
                                 "Tier" : "app",
                                 "Component" : "alm-efs",
                                 "Mount" : "codeontap"
-                            },
-                            "awsprofile" : {
-                                "Tier" : "app",
-                                "Component" : "alm-efs",
-                                "Mount" : "awsprofile"
                             }
                         }
                     }
@@ -145,9 +140,6 @@
                             },
                             "codeontap" : {
                                 "Directory" : "/codeontap/"
-                            },
-                            "awsprofile" : {
-                                "Directory" : "/awsprofile/"
                             }
                         }
                     }
@@ -181,19 +173,6 @@
         }
     },
     "Ports" :  {
-        "httpredirect" : {
-            "Port" : 80,
-            "Protocol" : "HTTP",
-            "IPProtocol" : "tcp",
-            "HealthCheck" : {
-                "Path" : "/",
-                "HealthyThreshold" : "2",
-                "UnhealthyThreshold" : "3",
-                "Interval" : "30",
-                "Timeout" : "5",
-                "SuccessCodes" : "301"
-            }
-        },
         "jenkins" : {
             "Port": 8080,
             "Protocol": "HTTP",
@@ -226,10 +205,22 @@
         "jenkinsjnlp" : {
             "Source" : "jenkinsjnlp",
             "Destination" : "jenkinsjnlp"
-        },
-        "httpredirect" : {
-            "Source" : "http",
-            "Destination" : "httpredirect"
+        }
+    },
+    "Storage" : {
+        "default" : {
+            "ECS" : {
+                "Volumes" : {
+                    "docker" : {
+                        "Device": "/dev/xvdcz",
+                        "Size": "50"
+                    },
+                    "temp" : {
+                        "Device" : "/dev/xvdct",
+                        "Size" : "20"
+                    }
+                }
+            }
         }
     }
 }
