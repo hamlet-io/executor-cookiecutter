@@ -1,0 +1,15 @@
+{
+    "product_id" : "",
+    "product_name" : "{{cookiecutter.product_id}}",
+    "domain_id" : "{{cookiecutter.product_id}}",
+    "solution_id" : "app",
+    "solution_name" : "{{cookiecutter.solution_id}}",
+    "environment_id" : "int",
+    "environment_name" : "integration",
+    "segment_id" : "default",
+    "segment_name" : "{{cookiecutter.segment_id}}",
+    "multi_az" : false,
+    "source_ip" : "_global",
+    "database_size_gb" : 20,
+    "django_secret_key" : "{% set seq = ['%','#','_','-','?','+','0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'] %}{% for n in range(30) %}{{ seq | random }}{% endfor %}"
+}

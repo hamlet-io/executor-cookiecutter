@@ -1,0 +1,234 @@
+{
+    "Solution" : {
+        "Id" : "{{cookiecutter.solution_id}}",
+        "Name" : "{{cookiecutter.solution_name}}"
+    },
+    "Tiers" : {
+        "web" : {
+            "Components" : {
+                "static" : {
+                    "SPA" : {
+                        "Instances" : {
+                            "default" : { 
+                                "Versions" : {
+                                    "v1" : {
+                                        "DeploymentUnits" : ["static-v1-spa"]
+                                    }
+                                }
+                            }
+                        },
+                        "CloudFront" : {
+                        },
+                        "Certificate" : {
+                        }
+                        {% if cookiecutter.source_ip != "_global"  %}
+                        ,
+                        "WAF" : {
+                            "IPAddressGroups" : {{ cookiecutter.source_ip.split(",") | tojson}}
+                        }
+                        {% endif %}
+                    }
+                }
+            }
+        },
+        "elb" : {
+            "Components" : {
+                "www" : {
+                    "LB" : {
+                        "Instances" : {
+                            "default" : {
+                                "Versions" : {
+                                    "v1" : {
+                                        "DeploymentUnits" : ["www-v1-lb"]
+                                    }
+                                }
+                            }
+                        },
+                        "Engine" : "application",
+                        "Logs" : true,
+                        "PortMappings" : {
+                            "https" : {},
+                            "httpredirect" : {}
+                        },
+                        "IPAddressGroups" : {{ cookiecutter.source_ip.split(",") | tojson}}
+                    }
+                }
+            }
+        },
+        "app" : {
+            "Components" : {
+                "app-ecs" : {
+                    "DeploymentUnits" : ["app-ecs"],
+                    "ECS" : {
+                        "Services" : {
+                            "www-web" : {
+                                "Instances" : {
+                                    "default" : {
+                                        "Versions" : {
+                                            "v1" : {
+                                                "DeploymentUnits" : ["www-v1-web"]
+                                            }
+                                        }
+                                    }
+                                },
+                                "Containers" : {
+                                    "www-web" : {
+                                        "Cpu" : 512,
+                                        "Memory" : 512,
+                                        "MaximumMemory" : -1,
+                                        "Ports" : {
+                                            "http" : {
+                                                "LB" : {
+                                                    "Tier": "elb",
+                                                    "Component"  : "www",
+                                                    "PortMapping" : "https",
+                                                    "LinkName" : "SITE"
+                                                },
+                                                "DynamicHostPort" : true
+                                            }
+                                        },
+                                        "Links" : {
+                                            "database" : {
+                                                "Tier" : "db",
+                                                "Component" : "database"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "www-worker" : {
+                                "Instances" : {
+                                    "default" : {
+                                        "Versions" : {
+                                            "v1" : {
+                                                "DeploymentUnits" : ["www-v1-worker"]
+                                            }
+                                        }
+                                    }
+                                },
+                                "Containers" : {
+                                    "www-worker" : {
+                                        "Cpu" : 512,
+                                        "Memory" : 512,
+                                        "MaximumMemory" : -1,
+                                        "Ports" : {
+                                            "http" : {
+                                                "LB" : {
+                                                    "Tier": "elb",
+                                                    "Component"  : "www",
+                                                    "PortMapping" : "https",
+                                                    "LinkName" : "SITE"
+                                                },
+                                                "DynamicHostPort" : true
+                                            }
+                                        },
+                                        "Links" : {
+                                            "database" : {
+                                                "Tier" : "db",
+                                                "Component" : "database"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "redirector" : {
+                                "Instances" : {
+                                    "default" : {
+                                        "Versions" : {
+                                            "v1" : {
+                                                "DeploymentUnits" : ["www-v1-web"]
+                                            }
+                                        }
+                                    }
+                                },
+                                "DesiredCount" : 1,
+                                "Containers" : {
+                                    "_redirector" : {
+                                        "Cpu" : 24,
+                                        "Memory" : 64,
+                                        "Ports" : {
+                                            "httpredirect" : {
+                                                "LB" : {
+                                                    "Tier": "elb",
+                                                    "Component"  : "visualiser",
+                                                    "PortMapping" : "httpredirect"
+                                                },
+                                                "DynamicHostPort" : true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "Tasks" : {
+                            "www-task" : {
+                                "Instances" : {
+                                    "default" : {
+                                        "Versions" : {
+                                            "v1" : {
+                                                "DeploymentUnits" : ["www-v1-task"]
+                                            }
+                                        }
+                                    }
+                                },
+                                "Containers" : {
+                                    "www-task" : {
+                                        "Cpu" : 512,
+                                        "Memory" : 512,
+                                        "Links" : {
+                                            "database" : {
+                                                "Tier" : "db",
+                                                "Component" : "database"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "msg" : {
+            "Components" : {
+                "queue" : {
+                    "cache" : {
+                        "Instances" : {
+                            "default" : {
+                                "Versions" : {
+                                    "v1" : {
+                                        "DeploymentUnits" : ["queue-v1-redis"]
+                                    }
+                                }
+                            }
+                        },
+                        "Engine" : "redis"
+                    }
+                }
+            }
+        },
+        "db" :{
+            "Components" : {
+                "database" : {
+                    "RDS" : {
+                        "Instances" : {
+                            "default" : {
+                                "Versions" : {
+                                    "v1" : {
+                                        "DeploymentUnits" : ["database-v1-rds"]
+                                    }
+                                }
+                            }
+                        },
+                        "Engine" : "postgres",
+                        "GenerateCredentials" : {
+                            "Enabled" : true,
+                            "EncryptionScheme" : "base64"
+                        },
+                        "Size" : {{ cookiecutter.database_size_gb }}
+                    }
+                }
+            }
+        }
+    }
+}
