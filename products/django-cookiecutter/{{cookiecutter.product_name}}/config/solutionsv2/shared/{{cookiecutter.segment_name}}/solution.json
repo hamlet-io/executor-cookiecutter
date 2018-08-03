@@ -33,7 +33,7 @@
         },
         "elb" : {
             "Components" : {
-                "www" : {
+                "www-lb" : {
                     "LB" : {
                         "Instances" : {
                             "default" : {
@@ -80,7 +80,7 @@
                                             "http" : {
                                                 "LB" : {
                                                     "Tier": "elb",
-                                                    "Component"  : "www",
+                                                    "Component"  : "www-lb",
                                                     "PortMapping" : "https",
                                                     "LinkName" : "SITE"
                                                 },
@@ -131,12 +131,12 @@
                                     }
                                 }
                             },
-                            "redirector" : {
+                            "www-redirect" : {
                                 "Instances" : {
                                     "default" : {
                                         "Versions" : {
                                             "v1" : {
-                                                "DeploymentUnits" : ["www-v1-web"]
+                                                "DeploymentUnits" : ["www-v1-redirect"]
                                             }
                                         }
                                     }
@@ -150,7 +150,7 @@
                                             "httpredirect" : {
                                                 "LB" : {
                                                     "Tier": "elb",
-                                                    "Component"  : "visualiser",
+                                                    "Component"  : "www-lb",
                                                     "PortMapping" : "httpredirect"
                                                 },
                                                 "DynamicHostPort" : true
