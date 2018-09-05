@@ -1,1 +1,1 @@
-# {{cookiecutter.product.name}} CodeOnTap CMDB
+# {{cookiecutter.product_name}} CodeOnTap CMDB
