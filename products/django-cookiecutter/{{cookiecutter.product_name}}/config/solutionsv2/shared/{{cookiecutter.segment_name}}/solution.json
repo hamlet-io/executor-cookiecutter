@@ -7,31 +7,33 @@
         "web" : {
             "Components" : {
                 "static" : {
-                    "SPA" : {
+                    "S3" : {
                         "Instances" : {
                             "default" : { 
                                 "Versions" : {
                                     "v1" : {
-                                        "DeploymentUnits" : ["static-v1-spa"]
+                                        "DeploymentUnits" : ["static-v1"]
                                     }
                                 }
                             }
                         },
-                        "CloudFront" : {
+                        "Website" : {
+                            "Enabled" : true
                         },
-                        "Certificate" : {
-                        }
-                        {% if cookiecutter.source_ip != "_global"  %}
-                        ,
-                        "WAF" : {
-                            "IPAddressGroups" : {{ cookiecutter.source_ip.split(",") | tojson}}
-                        }
-                        {% endif %}
+                        "PublicAccess" : {
+                            "GlobalReadOnly" : {
+                                "Enabled" : true,
+                                "Permissions" : "ro",
+                                "IPAddressGroups" : {{ cookiecutter.source_ip.split(",") | tojson}},
+                                "Paths" : {{ cookiecutter.global_media_paths.split(",") | tojson }}
+                            }
+                        },
+                        "CORSBehaviours" : [ "S3Read" ] 
                     }
                 }
             }
         },
-        "elb" : {
+        "frontdoor" : {
             "Components" : {
                 "www-lb" : {
                     "LB" : {
@@ -39,7 +41,7 @@
                             "default" : {
                                 "Versions" : {
                                     "v1" : {
-                                        "DeploymentUnits" : ["www-v1-lb"]
+                                        "DeploymentUnits" : ["frontdoor-v1-lb"]
                                     }
                                 }
                             }
@@ -47,8 +49,17 @@
                         "Engine" : "application",
                         "Logs" : true,
                         "PortMappings" : {
-                            "https" : {},
-                            "httpredirect" : {}
+                            "httpsflower" : {
+                                "Priority" : 200,
+                                "HostFilter" : true,
+                            },
+                            "https" : {
+                                "Priority" : 500,
+                                "HostFilter" : true
+                            },
+                            "httpredirect" : {
+                                "Redirect" : {}
+                            }
                         },
                         "IPAddressGroups" : {{ cookiecutter.source_ip.split(",") | tojson}}
                     }
@@ -60,6 +71,25 @@
                 "app-ecs" : {
                     "DeploymentUnits" : ["app-ecs"],
                     "ECS" : {
+                        "Containers" : {
+                            "Configuration" : {
+                                "Links" : {
+                                    "database" : {
+                                        "Tier" : "db",
+                                        "Component" : "database"
+                                    },
+                                    "cache" : {
+                                        "Tier" : "db",
+                                        "Component" : "cache"
+                                    },
+                                    "DJANGO_AWS_STORAGE_BUCKET" : {
+                                        "Tier" : "web",
+                                        "Component" : "static",
+                                        "Role" : "all"
+                                    }
+                                }
+                            }
+                        },
                         "Services" : {
                             "www-web" : {
                                 "Instances" : {
@@ -75,83 +105,78 @@
                                     "www-web" : {
                                         "Cpu" : 512,
                                         "Memory" : 512,
-                                        "MaximumMemory" : -1,
                                         "Ports" : {
                                             "http" : {
                                                 "LB" : {
                                                     "Tier": "elb",
-                                                    "Component"  : "www-lb",
+                                                    "Component"  : "frontdoor",
                                                     "PortMapping" : "https",
                                                     "LinkName" : "SITE"
                                                 },
                                                 "DynamicHostPort" : true
                                             }
-                                        },
-                                        "Links" : {
-                                            "database" : {
-                                                "Tier" : "db",
-                                                "Component" : "database"
-                                            }
                                         }
                                     }
                                 }
                             },
-                            "www-worker" : {
+                            "www-celeryworker" : {
                                 "Instances" : {
                                     "default" : {
                                         "Versions" : {
                                             "v1" : {
-                                                "DeploymentUnits" : ["www-v1-worker"]
+                                                "DeploymentUnits" : ["www-v1-celeryworker"]
                                             }
                                         }
                                     }
                                 },
                                 "Containers" : {
-                                    "www-worker" : {
+                                    "www-celeryworker" : {
                                         "Cpu" : 512,
-                                        "Memory" : 512,
-                                        "MaximumMemory" : -1,
-                                        "Ports" : {
-                                            "http" : {
-                                                "LB" : {
-                                                    "Tier": "elb",
-                                                    "Component"  : "www",
-                                                    "PortMapping" : "https",
-                                                    "LinkName" : "SITE"
-                                                },
-                                                "DynamicHostPort" : true
-                                            }
-                                        },
-                                        "Links" : {
-                                            "database" : {
-                                                "Tier" : "db",
-                                                "Component" : "database"
-                                            }
-                                        }
+                                        "Memory" : 512
                                     }
                                 }
                             },
-                            "www-redirect" : {
+                            "www-celerybeat" : {
                                 "Instances" : {
                                     "default" : {
                                         "Versions" : {
                                             "v1" : {
-                                                "DeploymentUnits" : ["www-v1-redirect"]
+                                                "DeploymentUnits" : ["www-v1-celerybeat"]
                                             }
                                         }
                                     }
                                 },
                                 "DesiredCount" : 1,
                                 "Containers" : {
-                                    "_redirector" : {
-                                        "Cpu" : 24,
-                                        "Memory" : 64,
+                                    "www-celerybeat" : {
+                                        "Cpu" : 256,
+                                        "Memory" : 256,
+                                        "MaximumMemory" : -1
+                                    }
+                                }
+                            },
+                            "www-flower" : {
+                                "Instances" : {
+                                    "default" : {
+                                        "Versions" : {
+                                            "v1" : {
+                                                "DeploymentUnits" : ["www-v1-flower"]
+                                            }
+                                        }
+                                    }
+                                },
+                                "DesiredCount" : 1,
+                                "Containers" : {
+                                    "www-flower" : {
+                                        "Cpu" : 128,
+                                        "Memory" : 128,
                                         "Ports" : {
-                                            "httpredirect" : {
+                                            "flower" : {
                                                 "LB" : {
                                                     "Tier": "elb",
-                                                    "Component"  : "www-lb",
-                                                    "PortMapping" : "httpredirect"
+                                                    "Component"  : "frontdoor",
+                                                    "PortMapping" : "httpsflower",
+                                                    "LinkName" : "CELERY_FLOWER_LB"
                                                 },
                                                 "DynamicHostPort" : true
                                             }
@@ -179,6 +204,15 @@
                                             "database" : {
                                                 "Tier" : "db",
                                                 "Component" : "database"
+                                            },
+                                            "cache" : {
+                                                "Tier" : "db",
+                                                "Component" : "cache"
+                                            },
+                                            "DJANGO_AWS_STORAGE_BUCKET" : {
+                                                "Tier" : "web",
+                                                "Component" : "static",
+                                                "Role" : "all"
                                             }
                                         }
                                     }

@@ -18,7 +18,7 @@
                             "httpredirect" : {}
                         },
                         "HealthCheckPort" : "jenkins",
-                        "IPAddressGroups" : ["automation_users"],
+                        "IPAddressGroups" : [ "automation_users" ],
                         "Certificate" : {
                             "IncludeInHost" : {
                                 "Product" : true,
@@ -55,7 +55,7 @@
                                 "Containers" : {
                                     "_jenkins" : {
                                         "Cpu" : 512,
-                                        "Memory" : 2048,
+                                        "Memory" : 1024,
                                         "Ports" : {
                                             "jenkinsjnlp" : {
                                                 "LB" : {
@@ -213,8 +213,12 @@
                         "Device": "/dev/xvdcz",
                         "Size": "50"
                     },
+                    "dockerVolume" : {
+                        "Device" : "/dev/xvdv",
+                        "Size" : "50"
+                    },
                     "temp" : {
-                        "Device" : "/dev/xvdct",
+                        "Device" : "/dev/xvdt",
                         "Size" : "20"
                     }
                 }
