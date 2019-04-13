@@ -21,7 +21,7 @@
     "email_server_from" : "{{cookiecutter.email_from}}",
     "email_subject_prefix" : "{{cookiecutter.product_name}} - {{cookiecutter.environment_name}}",
     "admin_url" : "admin/",
-    "global_media_paths" : "static,media,CACHE",
+    "public_media_paths" : "static,media,CACHE",
     "allow_user_registration" : [ "yes", "no"],
     "sentry_dsn" : ""
 }

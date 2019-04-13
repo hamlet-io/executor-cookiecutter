@@ -22,7 +22,7 @@
                                 "Enabled" : true,
                                 "Permissions" : "ro",
                                 "IPAddressGroups" : {{ cookiecutter.source_ip.split(",") | tojson}},
-                                "Paths" : {{ cookiecutter.global_media_paths.split(",") | tojson }}
+                                "Paths" : {{ cookiecutter.public_media_paths.split(",") | tojson }}
                             }
                         },
                         "CORSBehaviours" : [ "S3Read" ] 
