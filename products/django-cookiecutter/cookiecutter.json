@@ -16,12 +16,12 @@
     "queue_redis_version" : "5.0.0",
     "container_placement_strategy" : [ "daemon", "replica" ],
     "use_celery" : [ "yes", "no" ],
+    "celery_flower_username" : "admin",
     "email_from" : "{{cookiecutter.product_name}} - {{cookiecutter.environment_name}} <noreply@local.host>",
     "email_server_from" : "{{cookiecutter.email_from}}",
     "email_subject_prefix" : "{{cookiecutter.product_name}} - {{cookiecutter.environment_name}}",
     "admin_url" : "admin/",
-    "global_media_paths" : "static,CACHE",
+    "global_media_paths" : "static,media,CACHE",
     "allow_user_registration" : [ "yes", "no"],
-    "use_sentry" : [ "yes", "no"],
-    "sentry_dsn" : "{{ '' if cookiecutter.use_sentry == 'yes' else 'n/a' }}"
+    "sentry_dsn" : ""
 }
