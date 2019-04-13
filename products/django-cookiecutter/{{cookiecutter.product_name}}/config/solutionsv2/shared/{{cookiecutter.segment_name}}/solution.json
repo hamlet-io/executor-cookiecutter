@@ -17,9 +17,6 @@
                                 }
                             }
                         },
-                        "Website" : {
-                            "Enabled" : true
-                        },
                         "PublicAccess" : {
                             "GlobalReadOnly" : {
                                 "Enabled" : true,

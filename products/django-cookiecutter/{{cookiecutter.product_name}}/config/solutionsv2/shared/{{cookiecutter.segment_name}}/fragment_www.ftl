@@ -29,8 +29,6 @@
         
     [@Settings 
         {
-            "DJANGO_SETTINGS_MODULE" : "config.settings.production",
-            "DJANGO_ADMIN_URL" : "admin/",
             "DJANGO_ALLOWED_HOSTS" : allowedHosts?has_content?then(
                 allowedHosts?join(","),
                 "localhost"

@@ -1,5 +1,3 @@
 {
-    "DJANGO_ACCOUNT_ALLOW_REGISTRATION" : "{% if cookiecutter.allow_user_registration == "yes" %}1{% else %}0{% endif %}",
-    "DJANGO_EMAIL_BACKEND" : "anymail.backends.amazon_ses.EmailBackend",
     "LOG_LEVEL" : "info"
 }
