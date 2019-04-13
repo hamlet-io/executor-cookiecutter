@@ -33,7 +33,7 @@
                 }
             }
         },
-        "frontdoor" : {
+        "elb" : {
             "Components" : {
                 "www-lb" : {
                     "LB" : {
@@ -41,21 +41,84 @@
                             "default" : {
                                 "Versions" : {
                                     "v1" : {
-                                        "DeploymentUnits" : ["frontdoor-v1-lb"]
+                                        "DeploymentUnits" : ["www-v1-lb"]
                                     }
                                 }
                             }
                         },
                         "Engine" : "application",
                         "Logs" : true,
+                        "IdleTimeout" : 300,
+                        "Alerts" : {
+                            "5XXLBResponse" : {
+                                "Description" : "A high number of 5xx response codes have been sent from load balanced targets",
+                                "Name" : "5XXLBResponse",
+                                "Metric" : "HTTPCode_Target_5XX_Count",
+                                "Threshold" : 20,
+                                "Severity" : "Error",
+                                "Statistic" : "Sum",
+                                "Periods" : 2
+                            }
+                        },
                         "PortMappings" : {
                             "httpsflower" : {
                                 "Priority" : 200,
                                 "HostFilter" : true,
+                                "Certificate" : {
+                                    "IncludeInHost" : {
+                                        "Product" : false,
+                                        "Environment" : true,
+                                        "Tier" : false,
+                                        "Component" : false,
+                                        "Instance" : false,
+                                        "Version" : false,
+                                        "Host" : true
+                                    },
+                                    "Host" : "flower",
+                                    "Qualifiers" : {
+                                        "prod" : {
+                                            "IncludeInHost" : {
+                                                "Product" : false,
+                                                "Environment" : false,
+                                                "Segment" : false,
+                                                "Tier" : false,
+                                                "Component" : false,
+                                                "Instance" : false,
+                                                "Version" : false,
+                                                "Host" : true
+                                            }
+                                        }
+                                    }
+                                } 
                             },
                             "https" : {
                                 "Priority" : 500,
-                                "HostFilter" : true
+                                "HostFilter" : true,
+                                "Certificate" : {
+                                    "IncludeInHost" : {
+                                        "Product" : false,
+                                        "Environment" : true,
+                                        "Tier" : false,
+                                        "Component" : true,
+                                        "Instance" : false,
+                                        "Version" : false,
+                                        "Host" : false
+                                    },
+                                    "Qualifiers" : {
+                                        "prod" : {
+                                            "IncludeInHost" : {
+                                                "Product" : false,
+                                                "Environment" : false,
+                                                "Segment" : false,
+                                                "Tier" : false,
+                                                "Component" : true,
+                                                "Instance" : false,
+                                                "Version" : false,
+                                                "Host" : false
+                                            }
+                                        }
+                                    }
+                                }
                             },
                             "httpredirect" : {
                                 "Redirect" : {}
@@ -71,6 +134,32 @@
                 "app-ecs" : {
                     "DeploymentUnits" : ["app-ecs"],
                     "ECS" : {
+                        "Alerts" : {
+                            "HighHostMemoryUsage" : {
+                                "Description" : "High Memory usage on ECS Host cluster",
+                                "Name" : "HighHostMemoryUsage",
+                                "Metric" : "MemoryUtilization",
+                                "Threshold" : 95,
+                                "Severity" : "Error",
+                                "Statistic" : "Average",
+                                "Periods" : 2,
+                                "Resource" : {
+                                    "Type" : "ecs"
+                                }
+                            },
+                            "HighHostCPUUsage" : {
+                                "Description" : "High CPU usage on ECS Host cluster",
+                                "Name" : "HighHostCPUUsage",
+                                "Metric" : "CPUUtilization",
+                                "Threshold" : 95,
+                                "Severity" : "Error",
+                                "Statistic" : "Average",
+                                "Periods" : 2,
+                                "Resource" : {
+                                    "Type" : "ecs"
+                                }
+                            }
+                        },
                         "Containers" : {
                             "Configuration" : {
                                 "Links" : {
@@ -105,11 +194,12 @@
                                     "www-web" : {
                                         "Cpu" : 512,
                                         "Memory" : 512,
+                                        "MaximumMemory" : 2048,
                                         "Ports" : {
                                             "http" : {
                                                 "LB" : {
                                                     "Tier": "elb",
-                                                    "Component"  : "frontdoor",
+                                                    "Component"  : "www-lb",
                                                     "PortMapping" : "https",
                                                     "LinkName" : "SITE"
                                                 },
@@ -117,8 +207,11 @@
                                             }
                                         }
                                     }
+                                },
+                                "Placement" : {
+                                    "Strategy" : "{{cookiecutter.container_placement_strategy}}"
                                 }
-                            },
+                            }{% if cookiecutter.use_celery == "yes" %},
                             "www-celeryworker" : {
                                 "Instances" : {
                                     "default" : {
@@ -132,8 +225,12 @@
                                 "Containers" : {
                                     "www-celeryworker" : {
                                         "Cpu" : 512,
-                                        "Memory" : 512
+                                        "Memory" : 512,
+                                        "MaximumMemory" : 2048
                                     }
+                                },
+                                "Placement" : {
+                                    "Strategy" : "{{cookiecutter.container_placement_strategy}}"
                                 }
                             },
                             "www-celerybeat" : {
@@ -149,9 +246,8 @@
                                 "DesiredCount" : 1,
                                 "Containers" : {
                                     "www-celerybeat" : {
-                                        "Cpu" : 256,
-                                        "Memory" : 256,
-                                        "MaximumMemory" : -1
+                                        "Cpu" : 128,
+                                        "Memory" : 128
                                     }
                                 }
                             },
@@ -174,7 +270,7 @@
                                             "flower" : {
                                                 "LB" : {
                                                     "Tier": "elb",
-                                                    "Component"  : "frontdoor",
+                                                    "Component"  : "www-lb",
                                                     "PortMapping" : "httpsflower",
                                                     "LinkName" : "CELERY_FLOWER_LB"
                                                 },
@@ -183,7 +279,7 @@
                                         }
                                     }
                                 }
-                            }
+                            }{% endif %}
                         },
                         "Tasks" : {
                             "www-task" : {
@@ -200,6 +296,7 @@
                                     "www-task" : {
                                         "Cpu" : 512,
                                         "Memory" : 512,
+                                        "MaximumMemory" : 2048,
                                         "Links" : {
                                             "database" : {
                                                 "Tier" : "db",
@@ -222,10 +319,11 @@
                     }
                 }
             }
-        },
+        },{% if cookiecutter.use_celery == "yes" %}
         "msg" : {
             "Components" : {
                 "queue" : {
+                    "MultiAZ" : false,
                     "cache" : {
                         "Instances" : {
                             "default" : {
@@ -236,11 +334,23 @@
                                 }
                             }
                         },
-                        "Engine" : "redis"
+                        "Engine" : "redis",
+                        "EngineVersion" : "{{cookiecutter.queue_redis_version}}",
+                        "Alerts" : {
+                            "HighCPUUsage" : {
+                                "Description" : "Redis cache under high CPU load",
+                                "Name" : "HighCPUUsage",
+                                "Metric" : "EngineCPUUtilization",
+                                "Threshold" : 90,
+                                "Severity" : "Error",
+                                "Statistic" : "Average",
+                                "Periods" : 2
+                            }
+                        }
                     }
                 }
             }
-        },
+        },{% endif %}
         "db" :{
             "Components" : {
                 "database" : {
@@ -255,11 +365,33 @@
                             }
                         },
                         "Engine" : "postgres",
+                        "Version" : "{{cookiecutter.databse_postgres_version}}",
                         "GenerateCredentials" : {
                             "Enabled" : true,
                             "EncryptionScheme" : "base64"
                         },
-                        "Size" : {{ cookiecutter.database_size_gb }}
+                        "Size" : {{cookiecutter.database_size_gb}},
+                        "Alerts" : {
+                            "HighCPUUsage" : {
+                                "Description" : "Database under high CPU load",
+                                "Name" : "HighCPUUsage",
+                                "Metric" : "CPUUtilization",
+                                "Threshold" : 90,
+                                "Severity" : "Error",
+                                "Statistic" : "Average",
+                                "Periods" : 2
+                            },
+                            "LowDiskSpace" : {
+                                "Description" : "Database disk space is getting low only 500mb free",
+                                "Name" : "LowDiskSpace",
+                                "Metric" : "FreeStorageSpace",
+                                "Threshold" : 512000000,
+                                "Severity" : "Error",
+                                "Statistic" : "Maximum",
+                                "Periods" : 1,
+                                "Operator" : "LessThanOrEqualToThreshold"
+                            }
+                        }
                     }
                 }
             }

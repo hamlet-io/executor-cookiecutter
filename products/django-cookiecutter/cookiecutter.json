@@ -8,7 +8,16 @@
     "environment_name" : "integration",
     "segment_id" : "default",
     "segment_name" : "{{cookiecutter.segment_id}}",
-    "multi_az" : false,
     "source_ip" : "_global",
-    "database_size_gb" : 20
+    "database_size_gb" : 20,
+    "databse_postgres_version" : "9.6",
+    "queue_redis_version" : "5.0.0",
+    "container_placement_strategy" : [ "daemon", "replica" ],
+    "use_celery" : [ "yes", "no" ],
+    "email_from" : "{{cookiecutter.product_name}} - {{cookiecutter.environment_name}} <noreply@local.host>",
+    "email_server_from" : "{{cookiecutter.email_from}}",
+    "email_subject_prefix" : "{{cookiecutter.product_name}} - {{cookiecutter.environment_name}}",
+    "admin_url" : "admin/",
+    "global_media_paths" : "static,CACHE",
+    "allow_user_registration" : [ "yes", "no"]
 }
