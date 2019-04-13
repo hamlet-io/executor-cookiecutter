@@ -393,5 +393,42 @@
                 }
             }
         }
+    },
+    "Ports" :  {
+        "django" : {
+            "Port": 5000,
+            "Protocol": "HTTP",
+            "IPProtocol": "tcp",
+            "HealthCheck" : {
+                "SuccessCodes" : "{{cookiecutter.loadbalancer_healthcheck_healthy_responsecode}}",
+                "Path" : "{{cookiecutter.loadbalancer_healthcheck_path}}",
+                "Interval" : "30",
+                "Timeout" : "29",
+                "HealthyThreshold" : "2",
+                "UnhealthyThreshold" : "10"
+            }
+        },
+        "flower" : {
+            "Port" : 5555,
+            "Protocol" : "HTTP",
+            "IPProtocol" : "tcp",
+            "HealthCheck" : {
+                "Path" : "/static/favicon.ico",
+                "Interval" : "30",
+                "Timeout" : "29",
+                "HealthyThreshold" : "2",
+                "UnhealthyThreshold" : "10"
+            }
+        }
+    },
+    "PortMappings": { 
+        "httpsdjango": {
+            "Source": "https",
+            "Destination": "django"
+        },
+        "httpsflower" : {
+            "Source" : "https",
+            "Destination" : "flower"
+        }
     }
 }

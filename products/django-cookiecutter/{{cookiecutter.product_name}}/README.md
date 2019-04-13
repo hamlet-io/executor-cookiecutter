@@ -1,6 +1,21 @@
 # {{cookiecutter.product_name}} CodeOnTap CMDB
 
-This solution is designed to host a django based application created using the [django cookiecutter template(https://cookiecutter-django.readthedocs.io/en/latest/index.html)]
+This solution is designed to host a django based application created using the [django cookiecutter template](https://cookiecutter-django.readthedocs.io/en/latest/index.html)
+
+The deployment uses the following AWS Infrastructure components
+
+- Application Load balancer (ALB) for request routing, SSL offload and load balancing to django and flower
+- Elastic Container Service (ECS) with Ec2 for container hosting and orchestration
+- Relational Database Service (RDS) for database hosting
+- ElastiCache for Redis for celery queue
+- Simple Email Service API for email sending
+- S3 for static storage backend
+- CloudWatch alerts for basic application health
+
+## Endpoints
+
+- Django Web App - www.`the domain as configured in your CMDB domains.json file`
+- Flower - flower.`the domain as configured in your CMDB domains.json file`
 
 ## To Do
 
@@ -101,9 +116,10 @@ A couple of changes are required for full support
     ```
 
 - [ ] AWS ALB load balancer Support
+  - Update the app to support HTTP probes from the ALB Load balancer
     `settings/production.py` in the GENERAL section under allowed hosts add
 
-    ```python 
+    ```python
     # AWS Load balancers perform healthchecks using the host header set to the instance IP
     EC2_PRIVATE_IP = None
     try:
@@ -114,15 +130,18 @@ A couple of changes are required for full support
     if EC2_PRIVATE_IP:
         ALLOWED_HOSTS.append(EC2_PRIVATE_IP)
 
-    # So that the healthcheck works without being redirect to https
+    # So that the healthcheck works without being redirected to https
     SECURE_REDIRECT_EXEMPT = [
-        r'^healthcheck'
+        r'^{{ cookiecutter.loadbalancer_healthcheck_path if cookiecutter.loadbalancer_healthcheck_path | first != "/" else cookiecutter.loadbalancer_healthcheck_path|replace("/", "", 1) }}'
     ]
     ```
 
+  - Add a healthcheck route service.
+    The healthcheck page is called every 30 seconds by the AWS load balancer using a GET request. When healthy the site needs to respond with the a status code of `{{loadbalancer_healthcheck_healthy_responsecode}}` within 29 seconds. We recommend adding some checks for backend services and app functionality if possible. This healthcheck is used to decide if the container is performing as it should if the healthcheck fails twice the container will be replaced with a new one
+
 ### CMDB Changes
 
-These steps should be completed once you have deployed the baseline and cmk components for your environment using CodeOnTap 
+These steps should be completed once you have deployed the baseline and cmk components for your environment using CodeOnTap
 
 - [ ] Generate and encrypt `DJANGO_SECRET_KEY` in credentials.json in `infrastructure/operations/{{cookiecutter.environment_name}}/{{cookiecutter.segment_name}}/application-app-www/credentials.json`
 - [ ] Generate and encrypt `CELERY_FLOWER_PASSWORD` in `infrastructure/operations/{{cookiecutter.environment_name}}/{{cookiecutter.segment_name}}/www-v1-flower/credentials.json`
