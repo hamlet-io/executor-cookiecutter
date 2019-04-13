@@ -42,12 +42,10 @@
         }
     /]
 
-    {% if cookiecutter.use_celery == true %}
-    [@Settings 
+    {% if cookiecutter.use_celery == "yes" %}[@Settings 
         {
             "CELERY_BROKER_URL" : (_context.Links["redis"].State.Attributes.URL)!""
         }
-    /]
-    {% endif %}
+    /]{% endif %}
 
     [#break]
