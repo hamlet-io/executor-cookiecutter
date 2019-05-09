@@ -137,7 +137,7 @@ A couple of changes are required for full support
     ```
 
   - Add a healthcheck route service.
-    The healthcheck page is called every 30 seconds by the AWS load balancer using a GET request. When healthy the site needs to respond with the a status code of `{{loadbalancer_healthcheck_healthy_responsecode}}` within 29 seconds. We recommend adding some checks for backend services and app functionality if possible. This healthcheck is used to decide if the container is performing as it should if the healthcheck fails twice the container will be replaced with a new one
+    The healthcheck page is called every 30 seconds by the AWS load balancer using a GET request. When healthy the site needs to respond with the a status code of `{{cookiecutter.loadbalancer_healthcheck_healthy_responsecode}}` within 29 seconds. We recommend adding some checks for backend services and app functionality if possible. This healthcheck is used to decide if the container is performing as it should if the healthcheck fails twice the container will be replaced with a new one
 
 ### CMDB Changes
 
