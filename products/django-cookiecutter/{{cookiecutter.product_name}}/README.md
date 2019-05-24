@@ -51,6 +51,23 @@ A couple of changes are required for full support
     export FLOWER_BASIC_AUTH="${CELERY_FLOWER_USER}:${CELERY_FLOWER_PASSWORD}"
     ```
 
+- [ ] Add KMS Decryption for pg wait - add this just before the user default and DATABASE_URL Setup
+    `compose/production/django/entrypoint`
+
+    ```bash
+    if [ -n "${DATABASE_URL-}" ]; then
+        if [ "${DATABASE_PASSWORD}" == "base64:"* ]; then
+            echo ${DATABASE_PASSWORD#"base64:"}| base64 -d > "/tmp/cipher.blob"
+            DATABASE_PASSWORD="$(aws --region "${AWS_REGION}" kms decrypt --ciphertext-blob "fileb:///tmp/cipher.blob" --output text --query Plaintext | base64 -d || exit $?)"
+        fi
+        export POSTGRES_PASSWORD="${DATABASE_PASSWORD}"
+        export POSTGRES_USER="${DATABASE_USERNAME}"
+        export POSTGRES_DB="${DATABASE_NAME}"
+        export POSTGRES_HOST="${DATABASE_FQDN}"
+        export POSTGRES_PORT="${DATABASE_PORT}"
+    fi
+    ```
+
 - [ ] Add AWS KMS decryption of environment variables
    `settings/kms.py` add the following file
 
