@@ -35,12 +35,31 @@
             )
         } 
     /]
+    [#assign sentryLogLevel = 20 ]
+    [#switch ((_context.DefaultEnvironment["LOG_LEVEL"])!INFO)?upper_case ]
+        [#case "CRITICAL" ]
+            [#assign sentryLogLevel = 50 ]
+            [#break]
+        [#case "ERROR" ]
+            [#assign sentryLogLevel = 40 ]
+            [#break]
+        [#case "WARNING" ]
+            [#assign sentryLogLevel = 30 ]
+            [#break]
+        [#case "INFO" ]
+            [#assign sentryLogLevel = 20 ]
+            [#break]
+        [#case "DEBUG" ]
+            [#assign sentryLogLevel = 10 ]
+            [#break]
+        [#case "NONE" ]
+            [#assign sentryLogLevel = 0 ]
+            [#break]
+    [/#switch]
 
-    [@AltSettings 
-        {
-            "LOG_LEVEL" : "DJANGO_SENTRY_LOG_LEVEL"
-        }
-    /]
+    [@Settings {
+        "DJANGO_SENTRY_LOG_LEVEL" : sentryLogLevel
+    }]
 
     {% if cookiecutter.use_celery == "yes" %}[@Settings 
         {

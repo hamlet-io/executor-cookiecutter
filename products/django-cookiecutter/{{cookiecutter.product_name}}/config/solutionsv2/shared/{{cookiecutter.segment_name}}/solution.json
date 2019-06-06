@@ -88,7 +88,7 @@
                                     }
                                 } 
                             },
-                            "https" : {
+                            "httpsdjango" : {
                                 "Priority" : 500,
                                 "HostFilter" : true,
                                 "Certificate" : {
