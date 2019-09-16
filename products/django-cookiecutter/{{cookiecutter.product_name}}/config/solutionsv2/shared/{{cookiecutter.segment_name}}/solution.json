@@ -52,8 +52,9 @@
                                 "Name" : "5XXLBResponse",
                                 "Metric" : "HTTPCode_Target_5XX_Count",
                                 "Threshold" : 20,
-                                "Severity" : "Error",
+                                "Severity" : "error",
                                 "Statistic" : "Sum",
+                                "Unit" : "Count",
                                 "Periods" : 2
                             }
                         },
@@ -137,8 +138,9 @@
                                 "Name" : "HighHostMemoryUsage",
                                 "Metric" : "MemoryUtilization",
                                 "Threshold" : 95,
-                                "Severity" : "Error",
+                                "Severity" : "eror",
                                 "Statistic" : "Average",
+                                "Unit" : "Percent",
                                 "Periods" : 2,
                                 "Resource" : {
                                     "Type" : "ecs"
@@ -149,8 +151,9 @@
                                 "Name" : "HighHostCPUUsage",
                                 "Metric" : "CPUUtilization",
                                 "Threshold" : 95,
-                                "Severity" : "Error",
+                                "Severity" : "error",
                                 "Statistic" : "Average",
+                                "Unit" : "Percent",
                                 "Periods" : 2,
                                 "Resource" : {
                                     "Type" : "ecs"
@@ -339,7 +342,8 @@
                                 "Name" : "HighCPUUsage",
                                 "Metric" : "EngineCPUUtilization",
                                 "Threshold" : 90,
-                                "Severity" : "Error",
+                                "Unit" : "Percent",
+                                "Severity" : "error",
                                 "Statistic" : "Average",
                                 "Periods" : 2
                             }
@@ -374,7 +378,8 @@
                                 "Name" : "HighCPUUsage",
                                 "Metric" : "CPUUtilization",
                                 "Threshold" : 90,
-                                "Severity" : "Error",
+                                "Unit" : "Percent",
+                                "Severity" : "error",
                                 "Statistic" : "Average",
                                 "Periods" : 2
                             },
@@ -382,13 +387,47 @@
                                 "Description" : "Database disk space is getting low only 500mb free",
                                 "Name" : "LowDiskSpace",
                                 "Metric" : "FreeStorageSpace",
-                                "Threshold" : 512000000,
-                                "Severity" : "Error",
+                                "Threshold" : 5,
+                                "Unit" : "gigabytes",
+                                "Severity" : "error",
                                 "Statistic" : "Maximum",
                                 "Periods" : 1,
                                 "Operator" : "LessThanOrEqualToThreshold"
                             }
                         }
+                    }
+                }
+            }
+        },
+        "mgmt" : {
+            "alerts" : {
+                "topic" : {
+                    "Instances" : {
+                        "default" : {
+                            "DeploymentUnits" : [ "alerts"]
+                        }
+                    },
+                    "Subscriptions" : {
+                        {% if cookiecutter.alerts_use_ktlg == "yes" %}
+                        "ktlg" : {
+                            "Links" : {
+                                "ktlg" : {
+                                    "Tier" : "external",
+                                    "Component" : "ALERTS_KTLG"
+                                }
+                            }
+                        }{% if cookiecutter.alerts_use_email == "yes" %},{% endif %}
+                        {% endif %}
+                        {% if cookiecutter.alerts_use_email == "yes" %}
+                        "email" : {
+                            "Links" : {
+                                "email" : {
+                                    "Tier" : "external",
+                                    "Component" : "ALERTS_EMAIL"
+                                }
+                            }
+                        }
+                        {% endif %}
                     }
                 }
             }
