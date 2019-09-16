@@ -10,4 +10,4 @@ This template is for the creation of an AWS based Django deployment. It includes
 - Redis for queue management between web and worker
 - HTTPS offloading load balancer for web
 
-The template will create a single environment. If you want more you will ned too add them manually.
+The template will create a single environment. If you want more you will need too add them manually.

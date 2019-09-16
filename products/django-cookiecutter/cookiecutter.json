@@ -25,5 +25,11 @@
     "loadbalancer_healthcheck_healthy_responsecode" : 200,
     "public_media_paths" : "static,media,CACHE",
     "allow_user_registration" : [ "yes", "no"],
-    "sentry_dsn" : ""
+    "sentry_dsn" : "",
+    "alerts_use_ktlg" : [ "yes", "no"],
+    "alerts_ktlg_hostname" : "",
+    "alerts_ktlg_channel" : "",
+    "alerts_ktlg_hex_colorcode" : "DC143C",
+    "alerts_use_email" : [ "yes", "no"],
+    "alerts_email_address" : ""
 }

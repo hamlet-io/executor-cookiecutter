@@ -7,7 +7,7 @@ The deployment uses the following AWS Infrastructure components
 - Application Load balancer (ALB) for request routing, SSL offload and load balancing to django and flower
 - Elastic Container Service (ECS) with Ec2 for container hosting and orchestration
 - Relational Database Service (RDS) for database hosting
-- ElastiCache for Redis for celery queue
+- ElastiCache for Redis - celery queue
 - Simple Email Service API for email sending
 - S3 for static storage backend
 - CloudWatch alerts for basic application health

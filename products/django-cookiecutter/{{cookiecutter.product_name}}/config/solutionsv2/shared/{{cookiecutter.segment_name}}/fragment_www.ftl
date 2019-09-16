@@ -15,6 +15,12 @@
 
     [@Command command /]
 
+    [@includeServicesConfiguration
+        provider=AWS_PROVIDER
+        services=AWS_SIMPLE_EMAIL_SERVICE
+        deploymentFramework=CLOUD_FORMATION_DEPLOYMENT_FRAMEWORK
+    /]
+
     [@Policy getSESSendStatement() /]
 
     [#assign allowedHosts = [ ] +
