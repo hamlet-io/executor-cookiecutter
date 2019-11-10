@@ -3,5 +3,10 @@
         "Id" : "{{cookiecutter.product_id}}",
         "Name" : "{{cookiecutter.product_name}}",
         "Domain" : "{{cookiecutter.domain_id}}"
+    },
+    "Environments" : {
+        "{{cookiecutter.environment_id}}" : {
+            "MultiAZ" : {{ 'true' if cookiecutter.multi_az == true else 'false' }}
+        }
     }
 }
