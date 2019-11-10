@@ -10,11 +10,11 @@
     "segment_name" : "{{cookiecutter.segment_id}}",
     "multi_az" : false,
     "source_ip_network" : "0.0.0.0/0",
-    "certificate_arn" : "",
-    "certificate_cn" : "",
+    "certificate_arn" : "arn:aws:acm:us-east-1:123456789:certificate/replace-this-with-your-arn",
+    "certificate_cn" : "*.alm.local",
     "certificate_region" : "{% set arn_array = cookiecutter.certificate_arn.split(':') %}{{arn_array[3]}}",
     "slave_provider" : ["ecs", "docker" ],
-    "ecs_instance_type" : "{{ 't2.medium' if cookiecutter.slave_provider == 'ecs' else 'n/a' }}",
+    "ecs_instance_type" : "{{ 't3.medium' if cookiecutter.slave_provider == 'ecs' else 'n/a' }}",
     "security_realm" : ["local", "github", "saml" ],
     "auth_local_user" : "{{ 'admin' if cookiecutter.security_realm == 'local' else 'n/a' }}",
     "auth_local_pass" : "{{ '' if cookiecutter.security_realm == 'local' else 'n/a' }}",
@@ -24,4 +24,3 @@
     "github_repo_user" : "",
     "github_repo_pass" : ""
 }
-
