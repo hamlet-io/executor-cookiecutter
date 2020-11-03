@@ -76,10 +76,10 @@
                                             }
                                         },
                                         "Links" : {
-                                            "slave-codeontap" : {
+                                            "slave-hamlet" : {
                                                 "Tier" : "app",
                                                 "Component" : "alm-ecs",
-                                                "Task" : "codeontap",
+                                                "Task" : "hamlet",
                                                 "Role" : "run"
                                             }
                                         }
@@ -102,11 +102,11 @@
                             }   
                         },
                         "Tasks" : {
-                            "codeontap" : {
-                                "DeploymentUnits" : ["codeontap"],
+                            "hamlet" : {
+                                "DeploymentUnits" : ["hamlet"],
                                 "FixedName" : true,
                                 "Containers" : {
-                                    "_codeontap" : {
+                                    "_hamlet" : {
                                         "Version" : "latest",
                                         "Cpu" : 512,
                                         "Memory" : 512,
@@ -121,10 +121,10 @@
                                 "Component" : "alm-efs",
                                 "Mount" : "jenkins"
                             },
-                            "codeontap" : {
+                            "hamlet" : {
                                 "Tier" : "app",
                                 "Component" : "alm-efs",
-                                "Mount" : "codeontap"
+                                "Mount" : "hamlet"
                             }
                         }
                     }
@@ -136,8 +136,8 @@
                             "jenkins" : {
                                 "Directory" : "/jenkins_home/"
                             },
-                            "codeontap" : {
-                                "Directory" : "/codeontap/"
+                            "hamlet" : {
+                                "Directory" : "/hamlet/"
                             }
                         }
                     }
