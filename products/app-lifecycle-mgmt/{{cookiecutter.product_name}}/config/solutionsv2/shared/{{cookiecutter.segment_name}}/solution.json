@@ -76,7 +76,7 @@
                                             }
                                         },
                                         "Links" : {
-                                            "slave-hamlet" : {
+                                            "agent-hamlet" : {
                                                 "Tier" : "app",
                                                 "Component" : "alm-ecs",
                                                 "Task" : "hamlet",
