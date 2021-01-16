@@ -1,7 +1,12 @@
-# gen3-patterns
+# executor-cookiecutter
 
-Reusable templates for the codeontap framework that help with deploying codeontap
+Reusable templates for the Hamlet framework that help with getting started quickly with Hamlet.
 
-The templates are provisioned using cookiecutter (https://github.com/audreyr/cookiecutter). To use a template clone this repo and then call cookie cutter using the templates.
+The templates are provisioned using cookiecutter (https://github.com/audreyr/cookiecutter). The templates are intended to be called from within the Hamlet container environment. 
 
-It is part of the broader [CodeOnTap](http://codeontap.io) devops framework.
+Typical usage for creation of a new Product CMDB, using the CLI to prompt you for basic template information.
+```bash
+hamlet generate product base --prompt
+```
+
+It is part of the broader [Hamlet](http://hamlet.io) devops framework.

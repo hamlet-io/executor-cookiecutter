@@ -1,4 +1,4 @@
-# {{cookiecutter.product_name}} CodeOnTap CMDB
+# {{cookiecutter.product_name}} Hamlet CMDB
 
 This solution is designed to host a django based application created using the [django cookiecutter template](https://cookiecutter-django.readthedocs.io/en/latest/index.html)
 
@@ -158,7 +158,7 @@ A couple of changes are required for full support
 
 ### CMDB Changes
 
-These steps should be completed once you have deployed the baseline and cmk components for your environment using CodeOnTap
+These steps should be completed once you have deployed the baseline and cmk components for your environment using Hamlet
 
 - [ ] Generate and encrypt `DJANGO_SECRET_KEY` in credentials.json in `infrastructure/operations/{{cookiecutter.environment_name}}/{{cookiecutter.segment_name}}/application-app-www/credentials.json`
 - [ ] Generate and encrypt `CELERY_FLOWER_PASSWORD` in `infrastructure/operations/{{cookiecutter.environment_name}}/{{cookiecutter.segment_name}}/www-v1-flower/credentials.json`
