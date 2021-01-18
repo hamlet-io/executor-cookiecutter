@@ -3,7 +3,7 @@
         "Id" : "{{cookiecutter.account_id}}",
         "Name" : "{{cookiecutter.account_name}}",
         "Seed" : "{{cookiecutter.account_seed}}",
-        "Provider" : "{{cookiecutter.account_type}}",
-        "ProviderId" : "{{cookiecutter.aws_account_id}}"
+        "Provider" : "{{cookiecutter.provider_type}}",
+        "ProviderId" : "{{cookiecutter.provider_id}}"
     }
 }
