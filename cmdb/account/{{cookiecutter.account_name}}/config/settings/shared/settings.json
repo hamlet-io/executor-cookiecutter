@@ -1,6 +1,6 @@
 {
     "Registries" : {
-        {% if cookiecutter.provider_type == "aws" %}
+        {%- if cookiecutter.provider_type == "aws" -%}
         "docker" : {
             "EndPoint" : "{{cookiecutter.provider_id}}.dkr.ecr.ap-southeast-2.amazonaws.com"
         },
@@ -36,6 +36,6 @@
             "EndPoint" : "rds",
             "Prefix" : "registry"
         }
-        {% endif %}
+        {%- endif -%}
     }
 }

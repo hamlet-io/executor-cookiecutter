@@ -1,10 +1,7 @@
 {
     "Tenant" : {
         "Id" : "{{cookiecutter.tenant_id}}",
-        "Name" : "{{cookiecutter.tenant_name}}",
-        "CertificateBehaviours" : {
-            "External" : true
-        }
+        "Name" : "{{cookiecutter.tenant_name}}"
     },
     "Account" : {
         "Region" : "{{cookiecutter.default_region}}",
