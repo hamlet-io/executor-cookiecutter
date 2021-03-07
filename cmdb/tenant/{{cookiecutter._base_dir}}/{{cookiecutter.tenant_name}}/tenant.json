@@ -5,7 +5,6 @@
     },
     "Account" : {
         "Region" : "{{cookiecutter.default_region}}",
-        "Domain" : "{{cookiecutter.tenant_id}}",
         "Audit" : {
             "Offline" :  {{cookiecutter.audit_log_offline_days}},
             "Expiration" :  {{cookiecutter.audit_log_expiry_days}}
