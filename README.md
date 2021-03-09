@@ -1,6 +1,5 @@
 ## Hamlet Deploy - Executor Patterns
 
-> previously known as executor-cookiecutter
 
 This repository is a part of the Hamlet Deploy application. It provides cookiecutter templates to Hamlet Deploy for quick creation of files and directory structures.
 
