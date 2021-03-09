@@ -1,12 +1,36 @@
-# executor-cookiecutter
+## Hamlet Deploy - Executor Patterns
 
-Reusable templates for the Hamlet framework that help with getting started quickly with Hamlet.
 
-The templates are provisioned using cookiecutter (https://github.com/audreyr/cookiecutter). The templates are intended to be called from within the Hamlet container environment. 
+This repository is a part of the Hamlet Deploy application. It provides cookiecutter templates to Hamlet Deploy for quick creation of files and directory structures.
 
-Typical usage for creation of a new Product CMDB, using the CLI to prompt you for basic template information.
+See https://docs.hamlet.io for more info on Hamlet Deploy
+
+### Installation
+
 ```bash
-hamlet generate product base --prompt
+git clone https://github.com/hamlet-io/executor-cookiecutter.git
 ```
 
-It is part of the broader [Hamlet](http://hamlet.io) devops framework.
+### Configuration
+
+Hamlet Deploy Executor - Patterns requires the following Environment Variable(s) to be used.
+
+| Variable            | Value                                                                                    |
+|---------------------|------------------------------------------------------------------------------------------|
+| GENERATION_PATTERNS_DIR | A fully qualified filepath to a local copy of the Hamlet Deploy Patterns repository. |
+
+
+### Update 
+
+To manually perform an update on Patterns, simply pull down the latest changes using git.
+
+```bash
+cd ./path/to/patterns
+git pull
+```
+
+### Usage
+
+The Executor Patterns capabilities of the Hamlet Deploy application is available within the CLI. 
+
+Run `hamlet generate --help` using the CLI for available options.
