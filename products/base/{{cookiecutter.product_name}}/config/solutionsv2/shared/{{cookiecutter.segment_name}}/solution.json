@@ -1,7 +1,6 @@
 {
     "Solution" : {
-        "Id" : "{{cookiecutter.solution_id}}",
-        "Name" : "{{cookiecutter.solution_name}}"
+        "Id" : "solution"
     },
     "Tiers" : {
     }

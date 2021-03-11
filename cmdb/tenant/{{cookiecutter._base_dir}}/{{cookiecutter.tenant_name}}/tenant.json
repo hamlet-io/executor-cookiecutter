@@ -1,14 +1,10 @@
 {
     "Tenant" : {
         "Id" : "{{cookiecutter.tenant_id}}",
-        "Name" : "{{cookiecutter.tenant_name}}",
-        "CertificateBehaviours" : {
-            "External" : true
-        }
+        "Name" : "{{cookiecutter.tenant_name}}"
     },
     "Account" : {
         "Region" : "{{cookiecutter.default_region}}",
-        "Domain" : "{{cookiecutter.tenant_id}}",
         "Audit" : {
             "Offline" :  {{cookiecutter.audit_log_offline_days}},
             "Expiration" :  {{cookiecutter.audit_log_expiry_days}}
