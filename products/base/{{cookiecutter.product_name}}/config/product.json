@@ -1,8 +1,8 @@
 {
     "Product" : {
         "Id" : "{{cookiecutter.product_id}}",
-        "Name" : "{{cookiecutter.product_name}}"{% if cookiecutter.domain_zone != "" %},
-        "Domain" : "{{cookiecutter.product_id}}"{% endif %}
+        "Name" : "{{cookiecutter.product_name}}",
+        "Domain" : "{{cookiecutter.product_id}}"
     }{% if cookiecutter.domain_zone != "" %},
     "Domains" : {
         "{{cookiecutter.product_id}}" : {
