@@ -1,4 +1,14 @@
-# [0.0.0](https://github.com/hamlet-io/engine-plugin-aws/compare/v8.0.0...v0.0.0) (2021-01-11)
+# [0.0.0](https://github.com/hamlet-io/engine-plugin-aws/compare/v8.0.1...v0.0.0) (2021-03-30)
+
+
+
+## [8.0.1](https://github.com/hamlet-io/engine-plugin-aws/compare/v8.0.0...v8.0.1) (2021-03-11)
+
+
+### Bug Fixes
+
+* typo in account settings ([9ab12af](https://github.com/hamlet-io/engine-plugin-aws/commit/9ab12af7ea0adf7830dda7a5be1e45a6b2f642cd))
+* **ci:** update job trigger for docker ([b95c8dd](https://github.com/hamlet-io/engine-plugin-aws/commit/b95c8ddc37d45fb14a8c0d152144d64fab9a1d45))
 
 
 
