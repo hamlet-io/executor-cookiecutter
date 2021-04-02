@@ -1,6 +1,6 @@
 {
   "Segment" : {
     "Id" : "{{cookiecutter.segment_id}}",
-    "Name" : "{{cookiecutter.segment_name}}"
+    "Name" : "{{cookiecutter.segment_id}}"
   }
 }
