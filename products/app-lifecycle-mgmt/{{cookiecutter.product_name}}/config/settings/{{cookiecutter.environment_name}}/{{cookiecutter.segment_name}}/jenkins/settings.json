@@ -1,5 +1,0 @@
-{
-    "JenkinsEnv" : {
-        "AgentProvider" : "{{cookiecutter.agent_provider}}"
-    }
-}
