@@ -1,9 +1,0 @@
-{
-    "product_id" : "",
-    "product_name" : "{{cookiecutter.product_id}}",
-    "environment_id" : "",
-    "environment_name" : "{{cookiecutter.environment_id}}",
-    "segment_id" : "default",
-    "segment_name" : "{{cookiecutter.segment_id}}",
-    "domain_zone" : ""
-}
